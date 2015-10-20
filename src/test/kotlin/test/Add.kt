@@ -1,3 +1,5 @@
+package test
+
 import junit.framework.TestCase
 import net.solutinno.pocket.Pocket
 
