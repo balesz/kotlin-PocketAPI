@@ -1,0 +1,22 @@
+buildscript {
+    ext.kotlin_version = '0.14.451'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'kotlin'
+
+repositories {
+    mavenCentral()
+}
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
+    compile 'com.squareup.moshi:moshi:1.0.0'
+    compile 'com.squareup.retrofit:converter-moshi:2.0.0-beta2'
+    testCompile 'junit:junit:4.12'
+}
