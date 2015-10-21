@@ -63,5 +63,4 @@ data class AddItem (
         val images: HashMap<String, Image>?,
         val videos: HashMap<String, Video>?,
         val resolved_normal_url: String?,
-        val given_url: String?
-)
+        val given_url: String?)

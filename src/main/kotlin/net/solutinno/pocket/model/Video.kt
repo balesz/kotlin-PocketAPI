@@ -8,5 +8,4 @@ data class Video (
         val height: String?,
         val type: String?,
         val vid: String?,
-        val length: String?
-)
+        val length: String?)

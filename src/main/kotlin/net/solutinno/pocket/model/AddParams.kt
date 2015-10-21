@@ -15,8 +15,7 @@ package net.solutinno.pocket.model
 data class AddParams (
         val consumer_key: String,
         val access_token: String,
-        val url: String,
-        val title: String = "",
-        val tags: String = "",
-        val tweet_id: String = ""
-)
+        var url: String = "",
+        var title: String = "",
+        var tags: String = "",
+        var tweet_id: String = "")

@@ -7,5 +7,4 @@ data class Image (
         val width: String?,
         val height: String?,
         val credit: String?,
-        val caption: String?
-)
+        val caption: String?)
