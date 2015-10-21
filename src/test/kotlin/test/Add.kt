@@ -4,7 +4,7 @@ import junit.framework.TestCase
 import net.solutinno.pocket.Pocket
 import kotlin.test.assertNotNull
 
-class Add(name: String?) : TestCase(name) {
+class Add(name: String) : TestCase(name) {
 
     val key: String = "46890-6b7d257a3df89fdc96e186f8"
 

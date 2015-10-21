@@ -13,9 +13,9 @@ class Retrieve(name: String) : TestCase(name) {
     fun test () {
         Pocket.init(key)
         val result = Pocket.retrieve(token) {
-            count = 1
+            count = 2
             state = RetrieveParams.STATE_UNREAD
-            detailType = RetrieveParams.DETAIL_TYPE_COMPLETE
+            detailType = RetrieveParams.DETAIL_TYPE_SIMPLE
         }
         checkNotNull(result)
         for (item in result.list)
