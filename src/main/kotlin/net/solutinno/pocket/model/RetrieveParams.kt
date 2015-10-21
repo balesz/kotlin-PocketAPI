@@ -19,16 +19,16 @@ data class RetrieveParams (
         val consumer_key: String,
         val access_token: String,
         var state: String? = null,
-        var favorite: String? = null,
+        var favorite: Int? = null,
         var tag: String? = null,
         var contentType: String? = null,
         var sort: String? = null,
         var detailType: String? = null,
         var search: String? = null,
         var domain: String? = null,
-        var since: String? = null,
-        var count: String? = null,
-        var offset: String? = null)
+        var since: Long? = null,
+        var count: Long? = null,
+        var offset: Long? = null)
 {
     companion object {
         val STATE_ALL = "all"

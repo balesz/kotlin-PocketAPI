@@ -13,11 +13,12 @@ class Retrieve(name: String) : TestCase(name) {
     fun test () {
         Pocket.init(key)
         val result = Pocket.retrieve(token) {
-            count = 1.toString()
+            count = 1
             state = RetrieveParams.STATE_UNREAD
             detailType = RetrieveParams.DETAIL_TYPE_COMPLETE
         }
         checkNotNull(result)
-        println(result)
+        for (item in result.list)
+            println(item)
     }
 }
