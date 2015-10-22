@@ -3,7 +3,7 @@ package test
 import junit.framework.TestCase
 import net.solutinno.pocket.Pocket
 
-class Authentication(name: String?) : TestCase(name) {
+class Authenticate(name: String?) : TestCase(name) {
 
     val key: String = "46890-6b7d257a3df89fdc96e186f8"
 

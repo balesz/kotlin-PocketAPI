@@ -5,7 +5,7 @@ import net.solutinno.pocket.Pocket
 import java.util.*
 import kotlin.test.assertNotNull
 
-class Send(name: String) : TestCase(name) {
+class Modify(name: String) : TestCase(name) {
 
     val key: String = "46890-6b7d257a3df89fdc96e186f8"
 
