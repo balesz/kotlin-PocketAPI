@@ -22,8 +22,5 @@ interface PocketInterface {
     fun retrieve (@Body params: RetrieveParams) : Call<RetrieveResult>
 
     @GET("/v3/send")
-    fun send (@Query("actions") actions: String,
-              @Query("access_token") access_token: String,
-              @Query("consumer_key") consumer_key: String
-    ) : Call<SendResult>
+    fun send (@QueryMap(encoded = true) params: Map<String, String>) : Call<SendResult>
 }

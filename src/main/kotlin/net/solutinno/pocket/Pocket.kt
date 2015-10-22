@@ -1,6 +1,7 @@
 package net.solutinno.pocket
 
 import com.squareup.moshi.Moshi
+import com.squareup.okhttp.Headers
 import net.solutinno.pocket.adapters.*
 import net.solutinno.pocket.interfaces.PocketInterface
 import net.solutinno.pocket.model.*
@@ -19,11 +20,12 @@ object Pocket {
         this.consumer_key = consumer_key
     }
 
-    private val moshi: Moshi
+    internal val moshi: Moshi
         get() = Moshi.Builder()
                 .add(AuthorsJsonAdapter())
                 .add(ImagesJsonAdapter())
                 .add(VideosJsonAdapter())
+                .add(SendResultItemJsonAdapter())
                 .build()
 
     private val pocketInterface: PocketInterface
@@ -56,20 +58,6 @@ object Pocket {
         class Builder(private val access_token: String) {
 
             private val actions: ArrayList<ActionParams> = arrayListOf()
-
-            fun send () : SendResult? {
-                if (actions.isEmpty())
-                    return null
-                //val call = pocketInterface.send(getParams())
-                val params = actions.toTypedArray()
-                val json = Moshi.Builder().build().adapter(params.javaClass).toJson(params)
-                val call = pocketInterface.send(
-                        URLEncoder.encode(json, Charsets.UTF_8.name()), access_token, consumer_key)
-                val response = call.execute()
-                val result = response.body()
-                actions.clear()
-                return result
-            }
 
             fun add (item_id: String? = null, init: ActionParams.Add.() -> Unit) : Builder {
                 val param = ActionParams.Add("add", item_id)
@@ -121,6 +109,18 @@ object Pocket {
                 return tags("tags_replace", item_id, init)
             }
 
+            fun send () : SendResult? {
+                if (actions.isEmpty())
+                    return null
+                val call = pocketInterface.send(getParams())
+                val response = call.execute()
+                val result = response.body()
+                if (result == null)
+                    handleError(response.headers())
+                actions.clear()
+                return result
+            }
+
             private fun basic (action: String, item_id: String? = null, init: ActionParams.() -> Unit) : Builder {
                 val param = ActionParams(action, item_id)
                 param.init()
@@ -138,8 +138,9 @@ object Pocket {
             private fun getParams () : Map<String, String> {
                 val params = actions.toTypedArray()
                 val result = HashMap<String, String>()
-                val json = Moshi.Builder().build().adapter(params.javaClass).toJson(params)
-                result.put("actions", URLEncoder.encode(json, Charsets.UTF_8.name()))
+                val json = moshi.adapter(params.javaClass).toJson(params)
+                val encodedJson = URLEncoder.encode(json, Charsets.UTF_8.name())
+                result.put("actions", encodedJson)
                 result.put("access_token", URLEncoder.encode(access_token, Charsets.UTF_8.name()))
                 result.put("consumer_key", URLEncoder.encode(Pocket.consumer_key, Charsets.UTF_8.name()))
                 return result
@@ -153,6 +154,8 @@ object Pocket {
         val call = pocketInterface.add(params)
         val response = call.execute()
         val result = response.body()
+        if (result == null)
+            handleError(response.headers())
         return result
     }
 
@@ -162,6 +165,17 @@ object Pocket {
         val call = pocketInterface.retrieve(params)
         val response = call.execute()
         val result = response.body()
-        return result?:RetrieveResult()
+        if (result == null)
+            handleError(response.headers())
+        return result?: RetrieveResult()
+    }
+
+    private fun handleError(headers: Headers?) {
+        if (headers == null)
+            return
+        val errorCode = headers.get("X-Error-Code")
+        val errorMessage = headers.get("X-Error")
+        if (errorCode != null && errorMessage != null)
+            throw RuntimeException("[$errorCode] $errorMessage")
     }
 }

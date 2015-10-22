@@ -1,6 +1,7 @@
 package net.solutinno.pocket.adapters
 
 import com.squareup.moshi.*
+import net.solutinno.pocket.Pocket
 import java.util.*
 import kotlin.reflect.KClass
 
@@ -21,7 +22,7 @@ interface ArrayMapJsonAdapter<T : Any> {
             return null
         }
         val result = HashMap<String, T>()
-        val valueAdapter = Moshi.Builder().build().adapter(type.java)
+        val valueAdapter = Pocket.moshi.adapter(type.java)
         reader.beginObject()
         while (reader.hasNext()) {
             val key = reader.nextName()
@@ -36,7 +37,7 @@ interface ArrayMapJsonAdapter<T : Any> {
     fun toJson (writer: JsonWriter?, authors: HashMap<String, T>) {
         if (writer == null)
             return
-        val valueAdapter = Moshi.Builder().build().adapter(type.java)
+        val valueAdapter = Pocket.moshi.adapter(type.java)
         for (key in authors.keySet()) {
             writer.name(key)
             valueAdapter.toJson(writer, authors.get(key))

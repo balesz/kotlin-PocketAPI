@@ -14,12 +14,11 @@ class Send(name: String) : TestCase(name) {
     fun test () {
         Pocket.init(key)
         val result = Pocket.Actions.Builder(token).apply {
-            favorite {
+            delete {
                 item_id = "1077188003"
                 time = Date().time
             }
-            favorite {
-                item_id = "1076110709"
+            delete ("1076110709") {
                 time = Date().time
             }
         }.send()
