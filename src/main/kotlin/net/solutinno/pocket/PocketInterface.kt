@@ -1,10 +1,10 @@
-package net.solutinno.pocket.interfaces
+package net.solutinno.pocket
 
 import net.solutinno.pocket.model.*
 import retrofit.Call
 import retrofit.http.*
 
-interface PocketInterface {
+internal interface PocketInterface {
     @Headers("Content-Type: application/json; charset=UTF-8", "X-Accept: application/json")
     @POST("/v3/oauth/request")
     fun request (@Body params: RequestParams) : Call<RequestResult>

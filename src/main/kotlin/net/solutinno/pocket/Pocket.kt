@@ -3,7 +3,6 @@ package net.solutinno.pocket
 import com.squareup.moshi.Moshi
 import com.squareup.okhttp.Headers
 import net.solutinno.pocket.adapters.*
-import net.solutinno.pocket.interfaces.PocketInterface
 import net.solutinno.pocket.model.*
 import retrofit.MoshiConverterFactory
 import retrofit.Retrofit
