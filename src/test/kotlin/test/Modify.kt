@@ -5,7 +5,6 @@ import junit.framework.TestCase
 import junit.framework.TestSuite
 import net.solutinno.pocket.Pocket
 import net.solutinno.pocket.model.SendResult
-import kotlin.test.assertNotNull
 
 class Modify(name: String) : TestCase(name) {
 

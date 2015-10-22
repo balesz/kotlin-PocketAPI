@@ -38,7 +38,7 @@ interface ArrayMapJsonAdapter<T : Any> {
         if (writer == null)
             return
         val valueAdapter = Pocket.moshi.adapter(type.java)
-        for (key in authors.keySet()) {
+        for (key in authors.keys) {
             writer.name(key)
             valueAdapter.toJson(writer, authors.get(key))
         }
