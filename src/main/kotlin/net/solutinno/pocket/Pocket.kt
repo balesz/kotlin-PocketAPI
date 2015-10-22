@@ -92,10 +92,6 @@ object Pocket {
                 return basic("delete", item_id, init)
             }
 
-            fun tags_clear (item_id: String? = null, init: ActionParams.() -> Unit) : Builder {
-                return basic("tags_clear", item_id, init)
-            }
-
             fun tags_add (item_id: String? = null, init: ActionParams.Tags.() -> Unit) : Builder {
                 return tags("tags_add", item_id, init)
             }
@@ -106,6 +102,10 @@ object Pocket {
 
             fun tags_replace (item_id: String? = null, init: ActionParams.Tags.() -> Unit) : Builder {
                 return tags("tags_replace", item_id, init)
+            }
+
+            fun tags_clear (item_id: String? = null, init: ActionParams.() -> Unit) : Builder {
+                return basic("tags_clear", item_id, init)
             }
 
             fun send () : SendResult? {
@@ -135,9 +135,9 @@ object Pocket {
             }
 
             private fun getParams () : Map<String, String> {
-                val params = actions.toTypedArray()
                 val result = HashMap<String, String>()
-                val json = moshi.adapter(params.javaClass).toJson(params)
+                val json = actions.joinToString(separator = ",", prefix = "[", postfix = "]",
+                        transform = { moshi.adapter(it.javaClass).toJson(it) })
                 val encodedJson = URLEncoder.encode(json, Charsets.UTF_8.name())
                 result.put("actions", encodedJson)
                 result.put("access_token", URLEncoder.encode(access_token, Charsets.UTF_8.name()))
