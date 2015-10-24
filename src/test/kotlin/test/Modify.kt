@@ -4,7 +4,7 @@ import junit.framework.Test
 import junit.framework.TestCase
 import junit.framework.TestSuite
 import net.solutinno.pocket.Pocket
-import net.solutinno.pocket.model.SendResult
+import net.solutinno.pocket.model.*
 
 class Modify(name: String) : TestCase(name) {
 
@@ -17,9 +17,14 @@ class Modify(name: String) : TestCase(name) {
     val tag1 = "tag1"
     val tag2 = "tag2"
 
+    override fun setUp() {
+        super.setUp()
+        Pocket.init(consumer_key = key, access_token = token)
+    }
+
     companion object {
 
-        @JvmStatic fun suite () : Test = tagTest
+        @JvmStatic fun suite () : Test = modifyTest
 
         val modifyTest: Test = TestSuite().apply {
             addTest(Modify(Modify::delete.name))
@@ -41,7 +46,84 @@ class Modify(name: String) : TestCase(name) {
         }
     }
 
-    fun assertTest (result: SendResult?) {
+    fun add () {
+        assertTest(Pocket.Actions.Builder().apply {
+            add (ActionAddParams(item_id = item1))
+            add (ActionAddParams(item_id = item2))
+        }.send())
+    }
+
+    fun archive () {
+        assertTest(Pocket.Actions.Builder().apply {
+            archive (ActionBasicParams(item_id = item1))
+            archive (ActionBasicParams(item_id = item2))
+        }.send())
+    }
+
+    fun readd () {
+        assertTest(Pocket.Actions.Builder().apply {
+            readd (ActionBasicParams(item_id = item1))
+            readd (ActionBasicParams(item_id = item2))
+        }.send())
+    }
+
+    fun favorite () {
+        assertTest(Pocket.Actions.Builder().apply {
+            favorite (ActionBasicParams(item_id = item1))
+            favorite (ActionBasicParams(item_id = item2))
+        }.send())
+    }
+
+    fun unfavorite () {
+        assertTest(Pocket.Actions.Builder().apply {
+            unfavorite (ActionBasicParams(item_id = item1))
+            unfavorite (ActionBasicParams(item_id = item2))
+        }.send())
+    }
+
+    fun delete () {
+        assertTest(Pocket.Actions.Builder().apply {
+            delete (ActionBasicParams(item_id = item1))
+            delete (ActionBasicParams(item_id = item2))
+        }.send())
+    }
+
+    fun tags_add () {
+        assertTest(Pocket.Actions.Builder().apply {
+            tags_add(ActionTagsParams(item_id = item1, tags = tag1))
+            tags_add(ActionTagsParams(item_id = item2, tags = tag2))
+        }.send())
+    }
+
+    fun tags_remove () {
+        assertTest(Pocket.Actions.Builder().apply {
+            tags_remove(ActionTagsParams(item_id = item1, tags = tag1))
+            tags_remove(ActionTagsParams(item_id = item2, tags = tag2))
+        }.send())
+    }
+
+    fun tags_replace () {
+        assertTest(Pocket.Actions.Builder().apply {
+            tags_replace(ActionTagsParams(item_id = item1, tags = tag2))
+            tags_replace(ActionTagsParams(item_id = item2, tags = tag1))
+        }.send())
+    }
+
+    fun tags_clear () {
+        assertTest(Pocket.Actions.Builder().apply {
+            tags_clear (ActionBasicParams(item_id = item1))
+            tags_clear (ActionBasicParams(item_id = item2))
+        }.send())
+    }
+
+    fun tag_rename () {
+        assertTest(Pocket.Actions.Builder().apply {
+            tag_rename(ActionTagParams(old_tag = tag1, new_tag = "new$tag1"))
+            tag_rename(ActionTagParams(old_tag = tag2, new_tag = "new$tag2"))
+        }.send())
+    }
+
+    private fun assertTest (result: SendResult?) {
         assertNotNull(result)
         assertNotNull(result?.action_results)
         for (res in result!!.action_results!!) {
@@ -51,108 +133,5 @@ class Modify(name: String) : TestCase(name) {
             else if (res.basicResult != null)
                 assert(res.basicResult!!)
         }
-    }
-
-    fun add () {
-        Pocket.init(key)
-        assertTest(Pocket.Actions.Builder(token).apply {
-            add { item_id = item1 }
-            add (item2) {  }
-        }.send())
-    }
-
-    fun archive () {
-        Pocket.init(key)
-        assertTest(Pocket.Actions.Builder(token).apply {
-            archive { item_id = item1 }
-            archive (item2) {  }
-        }.send())
-    }
-
-    fun readd () {
-        Pocket.init(key)
-        assertTest(Pocket.Actions.Builder(token).apply {
-            readd { item_id = item1 }
-            readd (item2) {  }
-        }.send())
-    }
-
-    fun favorite () {
-        Pocket.init(key)
-        assertTest(Pocket.Actions.Builder(token).apply {
-            favorite { item_id = item1 }
-            favorite (item2) {  }
-        }.send())
-    }
-
-    fun unfavorite () {
-        Pocket.init(key)
-        assertTest(Pocket.Actions.Builder(token).apply {
-            unfavorite { item_id = item1 }
-            unfavorite (item2) {  }
-        }.send())
-    }
-
-    fun delete () {
-        Pocket.init(key)
-        assertTest(Pocket.Actions.Builder(token).apply {
-            delete { item_id = item1 }
-            delete (item2) {  }
-        }.send())
-    }
-
-    fun tags_add () {
-        Pocket.init(key)
-        assertTest(Pocket.Actions.Builder(token).apply {
-            tags_add {
-                item_id = item1
-                tags = tag1
-            }
-            tags_add (item2) { tags = tag2 }
-        }.send())
-    }
-
-    fun tags_remove () {
-        Pocket.init(key)
-        assertTest(Pocket.Actions.Builder(token).apply {
-            tags_remove {
-                item_id = item1
-                tags = tag1
-            }
-            tags_remove (item2) { tags = tag2 }
-        }.send())
-    }
-
-    fun tags_replace () {
-        Pocket.init(key)
-        assertTest(Pocket.Actions.Builder(token).apply {
-            tags_replace {
-                item_id = item1
-                tags = tag2
-            }
-            tags_replace (item2) { tags = tag1 }
-        }.send())
-    }
-
-    fun tags_clear () {
-        Pocket.init(key)
-        assertTest(Pocket.Actions.Builder(token).apply {
-            tags_clear { item_id = item1 }
-            tags_clear (item2) {  }
-        }.send())
-    }
-
-    fun tag_rename () {
-        Pocket.init(key)
-        assertTest(Pocket.Actions.Builder(token).apply {
-            tag_rename {
-                old_tag = tag1
-                new_tag = "new$tag1"
-            }
-            tag_rename {
-                old_tag = tag2
-                new_tag = "new$tag2"
-            }
-        }.send())
     }
 }

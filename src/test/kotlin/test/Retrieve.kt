@@ -10,13 +10,16 @@ class Retrieve(name: String) : TestCase(name) {
 
     val token: String = "a3401a43-b36f-47e4-1139-08245d"
 
+    override fun setUp() {
+        super.setUp()
+        Pocket.init(consumer_key = key, access_token = token)
+    }
+
     fun test () {
-        Pocket.init(key)
-        val result = Pocket.retrieve(token) {
-            count = 2
-            state = RetrieveParams.STATE_UNREAD
-            detailType = RetrieveParams.DETAIL_TYPE_SIMPLE
-        }
+        val result = Pocket.retrieve(RetrieveParams(
+                count = 2,
+                state = RetrieveParams.STATE_UNREAD,
+                detailType = RetrieveParams.DETAIL_TYPE_SIMPLE))
         checkNotNull(result)
         for (item in result.list)
             println(item)

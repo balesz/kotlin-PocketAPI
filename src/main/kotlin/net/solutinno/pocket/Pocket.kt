@@ -13,10 +13,13 @@ object Pocket {
 
     private val url: String = "https://getpocket.com"
 
-    private lateinit var consumer_key: String
+    internal var consumer_key: String = ""
 
-    fun init(consumer_key: String) {
+    internal var access_token: String = ""
+
+    fun init(consumer_key: String, access_token: String = "") {
         this.consumer_key = consumer_key
+        this.access_token = access_token
     }
 
     internal val moshi: Moshi
@@ -54,58 +57,58 @@ object Pocket {
 
     object Actions {
 
-        class Builder(private val access_token: String) {
+        class Builder() {
 
-            private val actions: ArrayList<ActionParams> = arrayListOf()
+            private val actions: ArrayList<Any> = arrayListOf()
 
-            fun add (item_id: String? = null, init: ActionParams.Add.() -> Unit) : Builder {
-                val param = ActionParams.Add("add", item_id)
-                param.init()
-                actions.add(param)
+            fun add (params: ActionAddParams) : Builder {
+                params.action = "add"
+                params.time = Date().time
+                actions.add(params)
                 return this
             }
 
-            fun tag_rename (item_id: String? = null, init: ActionParams.Tag.() -> Unit) : Builder {
-                val param = ActionParams.Tag("tag_rename", item_id)
-                param.init()
-                actions.add(param)
+            fun tag_rename (params: ActionTagParams) : Builder {
+                params.action = "tag_rename"
+                params.time = Date().time
+                actions.add(params)
                 return this
             }
 
-            fun archive (item_id: String? = null, init: ActionParams.() -> Unit) : Builder {
-                return basic("archive", item_id, init)
+            fun archive (params: ActionBasicParams) : Builder {
+                return basic("archive", params)
             }
 
-            fun readd (item_id: String? = null, init: ActionParams.() -> Unit) : Builder {
-                return basic("readd", item_id, init)
+            fun readd (params: ActionBasicParams) : Builder {
+                return basic("readd", params)
             }
 
-            fun favorite (item_id: String? = null, init: ActionParams.() -> Unit) : Builder {
-                return basic("favorite", item_id, init)
+            fun favorite (params: ActionBasicParams) : Builder {
+                return basic("favorite", params)
             }
 
-            fun unfavorite (item_id: String? = null, init: ActionParams.() -> Unit) : Builder {
-                return basic("unfavorite", item_id, init)
+            fun unfavorite (params: ActionBasicParams) : Builder {
+                return basic("unfavorite", params)
             }
 
-            fun delete (item_id: String? = null, init: ActionParams.() -> Unit) : Builder {
-                return basic("delete", item_id, init)
+            fun delete (params: ActionBasicParams) : Builder {
+                return basic("delete", params)
             }
 
-            fun tags_add (item_id: String? = null, init: ActionParams.Tags.() -> Unit) : Builder {
-                return tags("tags_add", item_id, init)
+            fun tags_clear (params: ActionBasicParams) : Builder {
+                return basic("tags_clear", params)
             }
 
-            fun tags_remove (item_id: String? = null, init: ActionParams.Tags.() -> Unit) : Builder {
-                return tags("tags_remove", item_id, init)
+            fun tags_add (params: ActionTagsParams) : Builder {
+                return tags("tags_add", params)
             }
 
-            fun tags_replace (item_id: String? = null, init: ActionParams.Tags.() -> Unit) : Builder {
-                return tags("tags_replace", item_id, init)
+            fun tags_remove (params: ActionTagsParams) : Builder {
+                return tags("tags_remove", params)
             }
 
-            fun tags_clear (item_id: String? = null, init: ActionParams.() -> Unit) : Builder {
-                return basic("tags_clear", item_id, init)
+            fun tags_replace (params: ActionTagsParams) : Builder {
+                return tags("tags_replace", params)
             }
 
             fun send () : SendResult? {
@@ -120,17 +123,17 @@ object Pocket {
                 return result
             }
 
-            private fun basic (action: String, item_id: String? = null, init: ActionParams.() -> Unit) : Builder {
-                val param = ActionParams(action, item_id)
-                param.init()
-                actions.add(param)
+            private fun basic (action: String, params: ActionBasicParams) : Builder {
+                params.action = action
+                params.time = Date().time
+                actions.add(params)
                 return this
             }
 
-            private fun tags (action: String, item_id: String? = null, init: ActionParams.Tags.() -> Unit) : Builder {
-                val param = ActionParams.Tags(action, item_id)
-                param.init()
-                actions.add(param)
+            private fun tags (action: String, params: ActionTagsParams) : Builder {
+                params.action = action
+                params.time = Date().time
+                actions.add(params)
                 return this
             }
 
@@ -147,9 +150,7 @@ object Pocket {
         }
     }
 
-    fun add (access_token: String, init: AddParams.() -> Unit) : AddResult? {
-        val params = AddParams(consumer_key, access_token)
-        params.init()
+    fun add (params: AddParams) : AddResult? {
         val call = pocketInterface.add(params)
         val response = call.execute()
         val result = response.body()
@@ -158,9 +159,7 @@ object Pocket {
         return result
     }
 
-    fun retrieve(access_token: String, init: RetrieveParams.() -> Unit) : RetrieveResult {
-        val params = RetrieveParams(consumer_key, access_token)
-        params.init()
+    fun retrieve(params: RetrieveParams) : RetrieveResult {
         val call = pocketInterface.retrieve(params)
         val response = call.execute()
         val result = response.body()
