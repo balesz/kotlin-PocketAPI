@@ -1,12 +1,15 @@
 package test
 
-import junit.framework.Test
 import junit.framework.TestCase
 import junit.framework.TestSuite
 import net.solutinno.pocket.Pocket
 import net.solutinno.pocket.model.*
+import test.extensions.add
+import kotlin.reflect.KCallable
 
 class Modify(name: String) : TestCase(name) {
+
+    constructor (func: KCallable<*>) : this(func.name)
 
     val key: String = "46890-6b7d257a3df89fdc96e186f8"
 
@@ -24,25 +27,27 @@ class Modify(name: String) : TestCase(name) {
 
     companion object {
 
-        @JvmStatic fun suite () : Test = modifyTest
-
-        val modifyTest: Test = TestSuite().apply {
-            addTest(Modify(Modify::delete.name))
-            addTest(Modify(Modify::add.name))
-            addTest(Modify(Modify::archive.name))
-            addTest(Modify(Modify::readd.name))
-            addTest(Modify(Modify::favorite.name))
-            addTest(Modify(Modify::unfavorite.name))
+        @JvmStatic fun suite () : TestSuite = TestSuite().apply {
+            add(modifyTest, tagTest)
         }
 
-        val tagTest: Test = TestSuite().apply {
-            addTest(Modify(Modify::add.name))
-            addTest(Modify(Modify::tags_add.name))
-            addTest(Modify(Modify::tags_remove.name))
-            addTest(Modify(Modify::tags_add.name))
-            addTest(Modify(Modify::tags_replace.name))
-            addTest(Modify(Modify::tag_rename.name))
-            addTest(Modify(Modify::tags_clear.name))
+        val modifyTest: TestSuite = TestSuite().apply {
+            addTest(Modify(Modify::delete))
+            addTest(Modify(Modify::add))
+            addTest(Modify(Modify::archive))
+            addTest(Modify(Modify::readd))
+            addTest(Modify(Modify::favorite))
+            addTest(Modify(Modify::unfavorite))
+        }
+
+        val tagTest: TestSuite = TestSuite().apply {
+            addTest(Modify(Modify::add))
+            addTest(Modify(Modify::tags_add))
+            addTest(Modify(Modify::tags_remove))
+            addTest(Modify(Modify::tags_add))
+            addTest(Modify(Modify::tags_replace))
+            addTest(Modify(Modify::tag_rename))
+            addTest(Modify(Modify::tags_clear))
         }
     }
 
