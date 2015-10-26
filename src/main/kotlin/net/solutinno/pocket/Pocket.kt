@@ -1,7 +1,7 @@
 package net.solutinno.pocket
 
 import com.squareup.moshi.Moshi
-import com.squareup.okhttp.Headers
+import com.squareup.okhttp.Response
 import net.solutinno.pocket.adapters.*
 import net.solutinno.pocket.model.*
 import retrofit.MoshiConverterFactory
@@ -117,8 +117,8 @@ object Pocket {
                 val call = pocketInterface.send(getParams())
                 val response = call.execute()
                 val result = response.body()
-                if (result == null)
-                    handleError(response.headers())
+                if (result == null || result.status != StatusCode.OK)
+                    handleError(response.raw())
                 actions.clear()
                 return result
             }
@@ -154,8 +154,8 @@ object Pocket {
         val call = pocketInterface.add(params)
         val response = call.execute()
         val result = response.body()
-        if (result == null)
-            handleError(response.headers())
+        if (result == null || result.status != StatusCode.OK)
+            handleError(response.raw())
         return result
     }
 
@@ -163,17 +163,18 @@ object Pocket {
         val call = pocketInterface.retrieve(params)
         val response = call.execute()
         val result = response.body()
-        if (result == null)
-            handleError(response.headers())
+        if (result == null || result.status != StatusCode.OK)
+            handleError(response.raw())
         return result?: RetrieveResult()
     }
 
-    private fun handleError(headers: Headers?) {
-        if (headers == null)
-            return
-        val errorCode = headers.get("X-Error-Code")
-        val errorMessage = headers.get("X-Error")
+    private fun handleError(response: Response) {
+        val errorCode = response.header("X-Error-Code", null)
+        val errorMessage = response.header("X-Error", null)
         if (errorCode != null && errorMessage != null)
-            throw RuntimeException("[$errorCode] $errorMessage")
+            throw PocketError (
+                    statusCode = response.code(),
+                    errorCode = errorCode.toInt(),
+                    message = "[$errorCode] $errorMessage")
     }
 }

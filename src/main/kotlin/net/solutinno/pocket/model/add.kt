@@ -16,7 +16,7 @@ import java.util.*
 data class AddParams (
         internal val consumer_key: String = Pocket.consumer_key,
         internal val access_token: String = Pocket.access_token,
-        val url: String = "",
+        val url: String,
         val title: String = "",
         val tags: String = "",
         val tweet_id: String = "")
