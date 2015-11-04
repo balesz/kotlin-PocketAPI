@@ -15,13 +15,21 @@ class Retrieve(name: String) : TestCase(name) {
         Pocket.init(consumer_key = key, access_token = token)
     }
 
-    fun test () {
+    fun testSimple () {
         val result = Pocket.retrieve(RetrieveParams(
-                count = 2,
+                count = 1,
                 state = RetrieveParams.STATE_UNREAD,
                 detailType = RetrieveParams.DETAIL_TYPE_SIMPLE))
         checkNotNull(result)
-        for (item in result.list)
-            println(item)
+        println(result)
+    }
+
+    fun testComplete () {
+        val result = Pocket.retrieve(RetrieveParams(
+                count = 1,
+                state = RetrieveParams.STATE_UNREAD,
+                detailType = RetrieveParams.DETAIL_TYPE_COMPLETE))
+        checkNotNull(result)
+        println(result)
     }
 }

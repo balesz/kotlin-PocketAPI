@@ -23,3 +23,8 @@ data class Video (
         val type: String?,
         val vid: String?,
         val length: String?)
+
+data class Tag (
+        val item_id: String?,
+        val tag: String?
+)

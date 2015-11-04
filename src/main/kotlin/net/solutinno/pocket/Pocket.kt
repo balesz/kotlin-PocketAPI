@@ -27,6 +27,7 @@ object Pocket {
                 .add(AuthorsJsonAdapter())
                 .add(ImagesJsonAdapter())
                 .add(VideosJsonAdapter())
+                .add(TagsJsonAdapter())
                 .add(SendResultItemJsonAdapter())
                 .build()
 
