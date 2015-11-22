@@ -6,6 +6,8 @@ import net.solutinno.pocket.adapters.*
 import net.solutinno.pocket.model.*
 import retrofit.MoshiConverterFactory
 import retrofit.Retrofit
+import retrofit.RxJavaCallAdapterFactory
+import rx.Observable
 import java.net.URLEncoder
 import java.util.*
 
@@ -33,6 +35,7 @@ object Pocket {
 
     private val pocketInterface: PocketInterface
         get() = Retrofit.Builder().baseUrl(Pocket.url)
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .build().create(PocketInterface::class.java)
 
@@ -54,6 +57,12 @@ object Pocket {
             val result = response.body()
             return result?: AuthorizeResult("", "", response.headers().get("X-Error-Code").toInt())
         }
+
+        fun rxRequest (redirect_uri: String, state: String = "") : Observable<RequestResult>
+                = pocketInterface.rxRequest(RequestParams(consumer_key, redirect_uri, state))
+
+        fun rxAuthorize (code: String) : Observable<AuthorizeResult>
+                = pocketInterface.rxAuthorize(AuthorizeParams(consumer_key, code))
     }
 
     object Actions {

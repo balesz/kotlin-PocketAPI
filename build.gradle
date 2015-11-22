@@ -15,7 +15,9 @@ repositories {
 }
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile 'io.reactivex:rxkotlin:0.30.1'
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
+    compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta2'
     compile 'com.squareup.moshi:moshi:1.0.0'
     compile 'com.squareup.retrofit:converter-moshi:2.0.0-beta2'
     testCompile 'junit:junit:4.12'
