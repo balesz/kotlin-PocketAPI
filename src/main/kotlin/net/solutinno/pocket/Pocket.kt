@@ -1,13 +1,15 @@
 package net.solutinno.pocket
 
 import com.squareup.moshi.Moshi
-import com.squareup.okhttp.Response
+import com.squareup.okhttp.Headers
 import net.solutinno.pocket.adapters.*
 import net.solutinno.pocket.model.*
+import retrofit.HttpException
 import retrofit.MoshiConverterFactory
 import retrofit.Retrofit
 import retrofit.RxJavaCallAdapterFactory
 import rx.Observable
+import rx.lang.kotlin.onError
 import java.net.URLEncoder
 import java.util.*
 
@@ -60,9 +62,11 @@ object Pocket {
 
         fun rxRequest (redirect_uri: String, state: String = "") : Observable<RequestResult>
                 = pocketInterface.rxRequest(RequestParams(consumer_key, redirect_uri, state))
+                .onError { handleError((it as HttpException).response().headers()) }
 
         fun rxAuthorize (code: String) : Observable<AuthorizeResult>
                 = pocketInterface.rxAuthorize(AuthorizeParams(consumer_key, code))
+                .onError { handleError((it as HttpException).response().headers()) }
     }
 
     object Actions {
@@ -128,7 +132,7 @@ object Pocket {
                 val response = call.execute()
                 val result = response.body()
                 if (result == null || result.status != StatusCode.OK)
-                    handleError(response.raw())
+                    handleError(response.headers())
                 actions.clear()
                 return result
             }
@@ -165,7 +169,7 @@ object Pocket {
         val response = call.execute()
         val result = response.body()
         if (result == null || result.status != StatusCode.OK)
-            handleError(response.raw())
+            handleError(response.headers())
         return result
     }
 
@@ -174,16 +178,16 @@ object Pocket {
         val response = call.execute()
         val result = response.body()
         if (result == null || result.status != StatusCode.OK)
-            handleError(response.raw())
+            handleError(response.headers())
         return result?: RetrieveResult()
     }
 
-    private fun handleError(response: Response) {
-        val errorCode = response.header("X-Error-Code", null)
-        val errorMessage = response.header("X-Error", null)
+    private fun handleError(headers: Headers) {
+        val errorCode = headers.get("X-Error-Code")
+        val errorMessage = headers.get("X-Error")
         if (errorCode != null && errorMessage != null)
             throw PocketError (
-                    statusCode = response.code(),
+                    statusCode = headers.get("Status").split(" ").first().toInt(),
                     errorCode = errorCode.toInt(),
                     message = "[$errorCode] $errorMessage")
     }

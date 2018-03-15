@@ -6,7 +6,9 @@ import net.solutinno.pocket.model.RequestResult
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import rx.exceptions.CompositeException
 import rx.lang.kotlin.observable
+import rx.observers.TestSubscriber
 import rx.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
@@ -23,14 +25,17 @@ class Authenticate : Assert() {
 
     @Test
     fun testAuthentication () {
-        observable<String> { it.onNext(redirect) }
-                .flatMap { Pocket.Authentication.rxRequest(it) }
-                .doOnNext { checkRequest(it) }
-                .doOnNext { authenticate(it.code) }
-                .delay(3, TimeUnit.SECONDS, Schedulers.immediate())
-                .flatMap { Pocket.Authentication.rxAuthorize(it.code) }
-                .doOnNext { checkAuthorize(it) }
-                .subscribe { println("Done") }
+        TestSubscriber<AuthorizeResult>().run {
+            observable<String> { it.onNext(redirect) }
+                    .flatMap { Pocket.Authentication.rxRequest(it) }
+                    .doOnNext { checkRequest(it) }
+                    .doOnNext { authenticate(it.code) }
+                    .delay(3, TimeUnit.SECONDS, Schedulers.immediate())
+                    .flatMap { Pocket.Authentication.rxAuthorize(it.code) }
+                    .doOnNext { checkAuthorize(it) }
+                    .subscribe (this)
+            assertNoErrors()
+        }
     }
 
     private fun checkRequest(request: RequestResult?) {
@@ -49,5 +54,11 @@ class Authenticate : Assert() {
         assertNotNull(result)
         assert(result!!.error == 0)
         println(result)
+    }
+
+    private fun checkError (ex: Throwable) {
+        val exception = if (ex is CompositeException) ex.exceptions.last() else ex;
+        println(exception)
+        assertNull(exception)
     }
 }
